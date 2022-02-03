@@ -5,7 +5,6 @@ import com.example.userservice.service.UserService;
 import com.example.userservice.vo.Greeting;
 import com.example.userservice.vo.RequestUser;
 import com.example.userservice.vo.ResponseUser;
-import com.netflix.discovery.converters.Auto;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
@@ -17,22 +16,21 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/")
+@RequestMapping("/user-service")
 public class UserController {
 
     private final Environment env;
     private final UserService userService;
-
     @Autowired private Greeting greeting;
 
     @GetMapping("/health_check")
     public String status(){
-        return "It's Working in User Service";
+        return String.format("It's Working in User Service on port %s",
+                env.getProperty("local.server.port"));
     }
 
     @GetMapping("/welcome")
     public String welcome2(){
-       // return env.getProperty("greeting.message");
         return greeting.getMessage();
     }
 
