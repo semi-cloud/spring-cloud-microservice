@@ -5,9 +5,10 @@ import com.example.userservice.jpa.UserEntity;
 import com.example.userservice.repository.UserRepository;
 import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
-import org.apache.catalina.LifecycleState;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,15 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        UserEntity userEntity = userRepository.findByEmail(username).orElseThrow(
+                () -> new UsernameNotFoundException(username));
+
+        return new User(userEntity.getEmail(), userEntity.getEncryptedPwd(),
+                true, true, true, true, new ArrayList<>());
+    }
 
     @Override
     public UserDto createUser(UserDto userDto) {
@@ -48,5 +58,12 @@ public class UserServiceImpl implements UserService {
     public List<UserDto> getUserByAll() {
         List<UserEntity> list = Lists.newArrayList(userRepository.findAll());
         return list.stream().map(x -> new ModelMapper().map(x, UserDto.class)).collect(Collectors.toList());
+    }
+
+    @Override
+    public UserDto getUserDetailsByEmail(String email) {
+        UserEntity user = userRepository.findByEmail(email).orElseThrow(
+                () -> new UsernameNotFoundException(email));
+        return new ModelMapper().map(user, UserDto.class);
     }
 }
