@@ -1,0 +1,15 @@
+server:
+  port: 8888
+
+spring:
+  application:
+    name: config-service
+  cloud:
+    config:
+      server:
+        native:
+          search-locations: file:///C:\Users\ADMIN\Desktop\WorkSpace\git-local-repo
+        git:
+          uri: file:///C:\Users\ADMIN\Desktop\WorkSpace\git-local-repo
+
+
